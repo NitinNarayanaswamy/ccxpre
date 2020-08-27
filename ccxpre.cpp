@@ -1,3 +1,20 @@
+// ccxpre helps configure Calculix finite element projects
+// Copyright (C) 2020  Nitin Narayanaswamy
+// 
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License along
+// with this program; if not, write to the Free Software Foundation, Inc.,
+// 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -6,7 +23,23 @@
 
 void print_ccxpre_help() {
     // limit each line to 82 chars
-    std::cout << "ccxpre help" << std::endl;
+    // std::cout << "" << std::endl;
+    std::cout << "ccxpre, Copyright (C) 2020 Nitin Narayanaswamy" << std::endl;
+    std::cout << "ccxpre comes with ABSOLUTELY NO WARRANTY." << std::endl;
+    std::cout << "This is free software, and you are welcome to redistribute it" << std::endl;
+    std::cout << "under certain conditions." << std::endl;
+    std::cout << std::endl;
+    std::cout << "Usage syntax: ccxpre [options] <your_file_name> [features]" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Common usage:" << std::endl;
+    std::cout << "    ccxpre <your_file_name>_mesh.inp    If the input file is a Abaqus mesh file generated using Gmsh. Clean mesh file <your_file_name>_cmesh.inp and Calculix input file <your_file_name>.inp are created." << std::endl;
+    std::cout << "    ccxpre <your_file_name>_mesh.inp P CAX4    Only surface element sets are included in the clean mesh file and CAX4 is set as element type." << std::endl;
+    std::cout << std::endl;
+    std::cout << "options" << std::endl;
+    std::cout << "    -b    Used to create a CalculiX project with boilerplate code. An input file <your_file_name>.inp is created which contains some common CalculiX commands to get started." << std::endl;
+    std::cout << "    -f    Force overwrite of clean mesh and Calculix input files." << std::endl;
+    std::cout << "    -i    Write only Calculix input file." << std::endl;
+    std::cout << "    -m    Write only clean mesh file." << std::endl;
 }
 
 bool element_type_code_check(const std::string element_set_include, const char code) {
@@ -133,15 +166,7 @@ void ccx_input_file_write(const std::string input_file_name, const std::string m
 }
 
 int main(int argc, char *argv[]) {
-    // vars
-    // {
-    // int i = 0;
-    // while(argv[i] != NULL) {
-    //     std::cout << argv[i] << std::endl;
-    //     i++;
-    // }
-    // }
-    
+    if(argc == 1) {print_ccxpre_help(); return 0;}
     if(argc >= 2) {
         std::string ccxpre_options = argv[1];
         unsigned int argv_mesh_input_file_name = 1;
@@ -166,7 +191,7 @@ int main(int argc, char *argv[]) {
                 if(option_code == 'm') {write_cmesh_file = true; write_input_file = false;}
                 if(option_code == 'i') {write_cmesh_file = false; write_input_file = true;}
                 if(option_code == 'f') {force_overwrite = true;}
-                if(option_code == 'd') {dummy_mesh_input_file = true;}
+                if(option_code == 'b') {dummy_mesh_input_file = true;}
             }
             argv_mesh_input_file_name = 2;
             argv_element_set_include = 3;
@@ -288,8 +313,6 @@ int main(int argc, char *argv[]) {
                 std::cout << "ERROR\tInvalid mesh file name" << std::endl;
                 std::cout << "INFO\tMesh file name syntax, <your_file_name>_mesh.inp" << std::endl;
             }
-            // std::cout << input_file << std::endl;
-            // std::cout << ext << std::endl;
         }
         else {
             std::cout << "ERROR\tInvalid mesh file name" << std::endl;
