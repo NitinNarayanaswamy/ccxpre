@@ -100,7 +100,7 @@ void ccx_input_file_write(const std::string input_file_name, const std::string m
     ccx_input_file << "**{ include files\n";
     if(dummy_mesh_input_file == true) {ccx_input_file << "*INCLUDE, INPUT = " << mesh_input_file_name << "\n";}
     else {ccx_input_file << "*INCLUDE, INPUT = " << input_file_name+"_cmesh.inp" << "\n";}
-    ccx_input_file << "*INCLUDE, INPUT = " << "/home/nitin/CAE/Materials/ccx/Steel_A36.inp" << "\n";
+    ccx_input_file << "**INCLUDE, INPUT = " << "Materials.inp" << "\n";
     ccx_input_file << "**}\n";
     ccx_input_file << "\n";
     ccx_input_file << "**{ materials\n";
