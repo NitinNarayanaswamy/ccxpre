@@ -36,7 +36,7 @@
 #define PRINT_ERROR(message) std::cout << "ERROR    " << message << std::endl
 #define PRINT_NEW_LINE std::cout << std::end
 
-#define INPUT_FILE_NAME input_file.substr(0, input_file.find_last_of('.'))
+#define INPUT_FILE_NAME input_file.substr(0, input_file.find_last_of('_'))
 
 namespace write_ccx {
     void input_file(const std::string input_file, const bool write_ccx_boilerplate, const bool overwrite_flag) {
