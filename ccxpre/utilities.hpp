@@ -5,7 +5,11 @@
 namespace utilities {
     void print_help();
 
-    bool is_file(const std::string file_name);
+    bool is_file(const std::string file);
 
-    bool element_type_code_check(const std::string element_set_include, const char code);
+    void str_to_upper(std::string &str);
+
+    std::string get_key_value_pair(const std::string str, const std::string keyword, const char key_value_delimiter, const char delimiter);
+
+    std::string which_element_type(const std::string element_config, const char code);
 }

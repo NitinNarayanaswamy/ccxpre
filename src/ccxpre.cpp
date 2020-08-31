@@ -24,15 +24,27 @@
 #include <../ccxpre/write_ccx.hpp>
 #include <../ccxpre/input_env.hpp>
 
-#define OPT_STR "hfmb:i:e:"
-// #define USAGE_FMT "[-h forhelp] [-f forceoverwriteflag] [-m cleanmeshflag] [-b modelname] [-i meshfile] [-e elementsetcode_elementtype]"
 #define PRINT(message) std::cout << message << std::endl
+#define DEBUG false
+#if DEBUG
+    #define PRINT_DEBUG(message) std::cout << "DEBUG    " << message << std::endl
+#else
+    #define PRINT_DEBUG(message) 
+#endif
+#define PRINT_INFO(message) std::cout << "INFO    " << message << std::endl
+#define PRINT_WARNING(message) std::cout << "WARNING    " << message << std::endl
+#define PRINT_ERROR(message) std::cout << "ERROR    " << message << std::endl
 #define PRINT_NEW_LINE std::cout << std::endl
+
+#define OPT_STR "hfmb:i:e:"
+#define USAGE_FMT "[-h] [-fm] [-b b_arg | -i i_arg [-e e_arg]]"
+
+#define WRITE_CCX_BOILERPLATE true
 
 typedef struct {
     bool write_clean_mesh_file_only;
     bool force_overwrite;
-    std::string input_file;
+    std::string input_file_name;
     std::string element_config;
 } options_t;
 
@@ -49,29 +61,29 @@ int main(int argc, char *argv[]) {
                 return EXIT_SUCCESS;
             case 'f':
                 options.force_overwrite = true;
-                PRINT("WARNING    Files will be overwritten");
+                PRINT_WARNING("Files will be overwritten");
                 break;
             case 'm':
                 options.write_clean_mesh_file_only = true;
-                PRINT("INFO    Writing only clean mesh file");
+                PRINT_INFO("Writing only clean mesh file");
                 break;
             case 'b':
-                write_ccx::input_file(optarg, optarg, true);
-                PRINT("INFO    " << optarg << " created");
+                write_ccx::input_file(optarg, WRITE_CCX_BOILERPLATE, options.force_overwrite);
                 return EXIT_SUCCESS;
             case 'i':
-                options.input_file = optarg;
+                options.input_file_name = optarg;
                 break;
             case 'e':
                 options.element_config = optarg;
                 break;
             case '?':
-                PRINT("INFO    See help using -h option");
+                PRINT_INFO("See help using -h option");
                 return EXIT_SUCCESS;
         }
     }
 
-    input_env::check_n_run(options.input_file, options.element_config);
+    if(options.element_config == "All") {PRINT_WARNING("By default all elements sets are written");}
+    input_env::check_n_run(options.input_file_name, options.element_config, options.force_overwrite);
     return EXIT_SUCCESS;
 }
 

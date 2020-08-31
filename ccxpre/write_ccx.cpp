@@ -15,35 +15,54 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+#include <iostream>
 #include <string>
 #include <fstream>
 #include <chrono>
 #include <ctime>
 
+#include <write_ccx.hpp>
+#include <utilities.hpp>
+
+#define PRINT(message) std::cout << message << std::endl
+#define DEBUG false
+#if DEBUG
+    #define PRINT_DEBUG(message) std::cout << "DEBUG    " << message << std::endl
+#else
+    #define PRINT_DEBUG(message) 
+#endif
+#define PRINT_INFO(message) std::cout << "INFO    " << message << std::endl
+#define PRINT_WARNING(message) std::cout << "WARNING    " << message << std::endl
+#define PRINT_ERROR(message) std::cout << "ERROR    " << message << std::endl
+#define PRINT_NEW_LINE std::cout << std::end
+
+#define INPUT_FILE_NAME input_file.substr(0, input_file.find_last_of('.'))
+
 namespace write_ccx {
-    void input_file(const std::string input_file_name, const std::string mesh_input_file_name, const bool write_ccx_boilerplate) {
-        std::string file_name;
-        if(write_ccx_boilerplate == true) {file_name = input_file_name;}
-        else {file_name = input_file_name+".inp";}
-        std::ofstream ccx_input_file(file_name);
+    void input_file(const std::string input_file, const bool write_ccx_boilerplate, const bool overwrite_flag) {
+        if(utilities::is_file(input_file) == true && overwrite_flag == false) {
+            PRINT_ERROR(input_file << " file exists, to force overwrite use -f option");
+            return;
+        }
+
+        std::ofstream ccx_input_file(input_file);
         auto time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
         ccx_input_file << "**Author: " << "Email: " << "\n";
         ccx_input_file << "\n";
         ccx_input_file << "**model information {\n";
-        ccx_input_file << "**Name: test\tUnits: mm N C" << "\n";
-        if(write_ccx_boilerplate == true) {ccx_input_file << "**Input file: " << input_file_name << " Mesh file: " << "\n";}
-        else {ccx_input_file << "**Input file: " << input_file_name+".inp" << " Mesh file: " << input_file_name+"_cmesh.inp" << "\n";}
+        ccx_input_file << "**Name: " << INPUT_FILE_NAME << "    Units: mm N C" << "\n";
+        if(write_ccx_boilerplate == true) {ccx_input_file << "**Input file: " << input_file << "    Mesh file: " << "\n";}
+        else {ccx_input_file << "**Input file: " << input_file << "    Mesh file: " << INPUT_FILE_NAME+"_cmesh.inp" << "\n";}
         ccx_input_file << "**Description: test model" << "\n";
         ccx_input_file << "**Time: " << ctime(&time);
         ccx_input_file << "**}\n";
         ccx_input_file << "\n";
         ccx_input_file << "*HEADING\n";
-        if(write_ccx_boilerplate == true) {ccx_input_file << input_file_name << "\n";}
-        else {ccx_input_file << input_file_name+".inp" << "\n";}
+        ccx_input_file << input_file << "\n";
         ccx_input_file << "\n";
         ccx_input_file << "**include files {\n";
         if(write_ccx_boilerplate == true) {ccx_input_file << "**INCLUDE, INPUT = " << "\n";}
-        else {ccx_input_file << "*INCLUDE, INPUT = " << input_file_name+"_cmesh.inp" << "\n";}
+        else {ccx_input_file << "*INCLUDE, INPUT = " << INPUT_FILE_NAME+"_cmesh.inp" << "\n";}
         ccx_input_file << "**INCLUDE, INPUT = " << "Materials.inp" << "\n";
         ccx_input_file << "**}\n";
         ccx_input_file << "\n";
@@ -78,5 +97,6 @@ namespace write_ccx {
         ccx_input_file << "*END STEP\n";
         ccx_input_file << "**}\n";
         ccx_input_file.close();
+        PRINT_INFO(input_file << " created");
     }
 }

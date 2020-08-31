@@ -3,5 +3,5 @@
 #include <iostream>
 
 namespace write_ccx {
-    void input_file(const std::string input_file_name, const std::string mesh_input_file_name, const bool write_ccx_boilerplate);
+    void input_file(const std::string input_file, const bool write_ccx_boilerplate, const bool overwrite_flag);
 }
