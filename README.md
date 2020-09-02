@@ -1,5 +1,5 @@
 # ccxpre
-A command line program that can be used to easily configure a CalculiX project. Abaqus input file generated using Gmsh can be configured to CalculiX input format if given as input to ccxpre.
+A command line program that helps configure a CalculiX project, and clean mesh files. Abaqus input file generated using Gmsh can be configured or converted to CalculiX input format if given as input to ccxpre.
 
 ## Examples
 To create a boilerplate CalculiX input file use,
