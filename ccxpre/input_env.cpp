@@ -38,12 +38,12 @@
 #define INPUT_FILE_NAME input_file.substr(0, input_file.find_last_of('.'))
 
 namespace input_env {
-    void check_n_run(const std::string input_file, const std::string element_config, const bool overwrite_flag) {
+    void check_n_run(const std::string input_file, const std::string element_config, const bool overwrite_flag, const bool write_clean_mesh_file_only) {
         if(INPUT_FILE_EXT == "inp") {
             if(utilities::is_file(input_file)) {
                 PRINT_INFO("Abaqus input file detected");
                 cmesh_gmsh::write(input_file, element_config, overwrite_flag);
-                write_ccx::input_file(INPUT_FILE_NAME+"_ccx.inp", false, overwrite_flag);
+                if(write_clean_mesh_file_only == false) {write_ccx::input_file(INPUT_FILE_NAME+"_ccx.inp", false, overwrite_flag);}
             }
             else {PRINT_ERROR(input_file << " file not found");}
         }

@@ -83,6 +83,6 @@ int main(int argc, char *argv[]) {
     }
 
     if(options.element_config == "All") {PRINT_WARNING("By default all elements sets are written");}
-    input_env::check_n_run(options.input_file_name, options.element_config, options.force_overwrite);
+    input_env::check_n_run(options.input_file_name, options.element_config, options.force_overwrite, options.write_clean_mesh_file_only);
     return EXIT_SUCCESS;
 }
