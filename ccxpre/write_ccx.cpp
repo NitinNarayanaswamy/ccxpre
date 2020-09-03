@@ -25,8 +25,7 @@
 #include <utilities.hpp>
 
 #define PRINT(message) std::cout << message << std::endl
-#define DEBUG false
-#if DEBUG
+#ifndef NDEBUG
     #define PRINT_DEBUG(message) std::cout << "DEBUG    " << message << std::endl
 #else
     #define PRINT_DEBUG(message) 
@@ -74,13 +73,13 @@ namespace write_ccx {
         ccx_input_file << "2.1e5, 0.3\n";
         ccx_input_file << "**}\n";
         ccx_input_file << "\n";
+        ccx_input_file << "**sections {\n";
+        ccx_input_file << "*SOLID SECTION, ELSET = Eall, MATERIAL = Steel_mm\n";
+        ccx_input_file << "**}\n";
+        ccx_input_file << "\n";
         ccx_input_file << "**boundary conditions {\n";
         ccx_input_file << "*BOUNDARY\n";
         ccx_input_file << "fix, 1, 3\n";
-        ccx_input_file << "**}\n";
-        ccx_input_file << "\n";
-        ccx_input_file << "**sections {\n";
-        ccx_input_file << "*SOLID SECTION, ELSET = Eall, MATERIAL = Steel_mm\n";
         ccx_input_file << "**}\n";
         ccx_input_file << "\n";
         ccx_input_file << "**step 1 {\n";

@@ -23,8 +23,7 @@
 #include <utilities.hpp>
 
 #define PRINT(message) std::cout << message << std::endl
-#define DEBUG false
-#if DEBUG
+#ifndef NDEBUG
     #define PRINT_DEBUG(message) std::cout << "DEBUG    " << message << std::endl
 #else
     #define PRINT_DEBUG(message) 
@@ -35,7 +34,7 @@
 #define PRINT_NEW_LINE std::cout << std::endl
 
 #define VERSION 0.1
-#define USAGE_FMT "[-h] [-fm] [-b b_arg | -i i_arg [-e e_arg]]"
+#define USAGE_FMT "[-h] [-fm] [-b b_arg | -i i_arg [-e e_arg -r r_arg]]"
 
 namespace utilities {
     void print_help() {

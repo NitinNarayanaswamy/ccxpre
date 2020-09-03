@@ -24,8 +24,7 @@
 #include <utilities.hpp>
 
 #define PRINT(message) std::cout << message << std::endl
-#define DEBUG false
-#if DEBUG
+#ifndef NDEBUG
     #define PRINT_DEBUG(message) std::cout << "DEBUG    " << message << std::endl
 #else
     #define PRINT_DEBUG(message) 
@@ -37,36 +36,20 @@
 
 #define INPUT_FILE_EXT input_file.substr(input_file.find_last_of('.')+1)
 #define INPUT_FILE_NAME input_file.substr(0, input_file.find_last_of('.'))
-#define KEY_VALUE_DELIMITER '='
-#define DELIMITER ','
+
+#define CCXPRE_KEY_VALUE_DELIMITER '='
+#define CCXPRE_DELIMITER ','
+#define CCXPRE_LINE_ELEMENT_SET "LIN"
+#define CCXPRE_SURFACE_ELEMENT_SET "SUR"
+#define CCXPRE_SOLID_ELEMENT_SET "SOL"
+#define CCXPRE_RCAL_ELEMENT_SET "RCES"
+
 #define ELEMENT_SET_KEY "ELSET"
-#define LINE_ELEMENT_SET "LIN"
-#define SURFACE_ELEMENT_SET "SUR"
-#define SOLID_ELEMENT_SET "SOL"
 #define NEW_ELEMENT_LINE(type, elset) "*ELEMENT,TYPE="+type+",ELSET="+elset
 
 namespace cmesh_gmsh {
-    std::string is_element_header_broken(const std::string element_line, const std::string element_config) {
-        std::string elset_value = utilities::get_key_value_pair(element_line, ELEMENT_SET_KEY, KEY_VALUE_DELIMITER, DELIMITER);
-        if(elset_value == "") {PRINT_ERROR(ELEMENT_SET_KEY << " not found"); return "";}
-        else {PRINT_DEBUG("*" << elset_value << "*");}
-        if(elset_value.substr(0, 4) == "LINE") {
-            std::string element_type = utilities::get_key_value_pair(element_config, LINE_ELEMENT_SET, KEY_VALUE_DELIMITER, DELIMITER);
-            PRINT_DEBUG("*" << element_type << "*");
-            if(element_type == "") {return "";}
-            else {return NEW_ELEMENT_LINE(element_type, elset_value);}
-        }
-        else if(elset_value.substr(0, 7) == "SURFACE") {
-            std::string element_type = utilities::get_key_value_pair(element_config, SURFACE_ELEMENT_SET, KEY_VALUE_DELIMITER, DELIMITER);
-            PRINT_DEBUG("*" << element_type << "*");
-            if(element_type == "") {return "";}
-            else {return NEW_ELEMENT_LINE(element_type, elset_value);}
-        }
-        else {PRINT_WARNING(elset_value << " unknown or not supported");}
-        return "";
-    }
-
-    void write(const std::string input_file, const std::string element_config, const bool overwrite_flag) {
+    void write(const std::string input_file, const std::string element_config,
+               const std::string recalculate_input, const bool overwrite_flag) {
         if(utilities::is_file(input_file) == false) {
             PRINT_ERROR(input_file << " file does not exists");
             return;
@@ -107,6 +90,19 @@ namespace cmesh_gmsh {
                             continue;
                         }
                     }
+                    else if(current_line.substr(0, 6) == "*ELSET" && recalculate_input != "None") {
+                        bool broken_element_set = is_element_set_broken(current_line.substr(6), recalculate_input);
+                        if(broken_element_set == false) {
+                            PRINT_INFO("Writing elements under set " << current_line);
+                            clean_mesh_file << current_line << "\n";
+                            continue;
+                        }
+                        else {
+                            PRINT_INFO("Skipping elements under set " << current_line);
+                            skip_line_flag = true;
+                            continue;
+                        }
+                    }
                     else {clean_mesh_file << current_line << "\n"; continue;}
                 }
                 else if(skip_line_flag != true) {clean_mesh_file << current_line << "\n"; continue;}
@@ -114,8 +110,38 @@ namespace cmesh_gmsh {
             }
             else {skip_line_count--;}
         }
+        // add recal broken elset
         mesh_file.close();
         clean_mesh_file.close();
         PRINT_INFO(INPUT_FILE_NAME+"_cmesh.inp" << " created");
+    }
+
+    std::string is_element_header_broken(const std::string element_line, const std::string element_config) {
+        std::string elset_in_line = utilities::get_key_value_pair(element_line, ELEMENT_SET_KEY, CCXPRE_KEY_VALUE_DELIMITER, CCXPRE_DELIMITER);
+        if(elset_in_line == "") {PRINT_ERROR(ELEMENT_SET_KEY << " not found"); return "";}
+        if(elset_in_line.substr(0, 4) == "LINE") {
+            std::string element_type = utilities::get_key_value_pair(element_config, CCXPRE_LINE_ELEMENT_SET, CCXPRE_KEY_VALUE_DELIMITER, CCXPRE_DELIMITER);
+            PRINT_DEBUG(element_type);
+            if(element_type == "") {return "";}
+            else {return NEW_ELEMENT_LINE(element_type, elset_in_line);}
+        }
+        else if(elset_in_line.substr(0, 7) == "SURFACE") {
+            std::string element_type = utilities::get_key_value_pair(element_config, CCXPRE_SURFACE_ELEMENT_SET, CCXPRE_KEY_VALUE_DELIMITER, CCXPRE_DELIMITER);
+            PRINT_DEBUG(element_type);
+            if(element_type == "") {return "";}
+            else {return NEW_ELEMENT_LINE(element_type, elset_in_line);}
+        }
+        else {PRINT_WARNING(elset_in_line << " unknown or not supported");}
+        return "";
+    }
+
+    bool is_element_set_broken(const std::string element_set_line, const std::string recalculate_input) {
+        std::string elset_in_line = utilities::get_key_value_pair(element_set_line, ELEMENT_SET_KEY, CCXPRE_KEY_VALUE_DELIMITER, CCXPRE_DELIMITER);
+        PRINT_DEBUG(elset_in_line);
+        if(elset_in_line == "") {PRINT_ERROR(ELEMENT_SET_KEY << " not found"); return "";}
+        std::string elset_in_input = utilities::get_key_value_pair(recalculate_input, CCXPRE_RCAL_ELEMENT_SET, CCXPRE_KEY_VALUE_DELIMITER, CCXPRE_DELIMITER);
+        PRINT_DEBUG(elset_in_input);
+        if(elset_in_line == elset_in_input) {return true;}
+        return false;
     }
 }

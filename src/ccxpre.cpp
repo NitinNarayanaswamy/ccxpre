@@ -25,8 +25,7 @@
 #include <../ccxpre/input_env.hpp>
 
 #define PRINT(message) std::cout << message << std::endl
-#define DEBUG false
-#if DEBUG
+#ifndef NDEBUG
     #define PRINT_DEBUG(message) std::cout << "DEBUG    " << message << std::endl
 #else
     #define PRINT_DEBUG(message) 
@@ -36,8 +35,8 @@
 #define PRINT_ERROR(message) std::cout << "ERROR    " << message << std::endl
 #define PRINT_NEW_LINE std::cout << std::endl
 
-#define OPT_STR "hfmb:i:e:"
-#define USAGE_FMT "[-h] [-fm] [-b b_arg | -i i_arg [-e e_arg]]"
+#define OPT_STR "hfmb:i:e:r:"
+#define USAGE_FMT "[-h] [-fm] [-b b_arg | -i i_arg [-e e_arg -r r_arg]]"
 
 #define WRITE_CCX_BOILERPLATE true
 
@@ -46,13 +45,14 @@ typedef struct {
     bool force_overwrite;
     std::string input_file_name;
     std::string element_config;
+    std::string recalculate_input;
 } options_t;
 
 int main(int argc, char *argv[]) {
     if(argc == 1) {utilities::print_help(); return EXIT_SUCCESS;}
 
     int opt;
-    options_t options = {false, false, "", "All"};
+    options_t options = {false, false, "", "All", "None"};
 
     while((opt = getopt(argc, argv, OPT_STR)) != EOF) {
         switch(opt) {
@@ -76,6 +76,9 @@ int main(int argc, char *argv[]) {
             case 'e':
                 options.element_config = optarg;
                 break;
+            case 'r':
+                options.recalculate_input = optarg;
+                break;
             case '?':
                 PRINT_INFO("See help using -h option");
                 return EXIT_SUCCESS;
@@ -83,6 +86,7 @@ int main(int argc, char *argv[]) {
     }
 
     if(options.element_config == "All") {PRINT_WARNING("By default all elements sets are written");}
-    input_env::check_n_run(options.input_file_name, options.element_config, options.force_overwrite, options.write_clean_mesh_file_only);
+    input_env::check_n_run(options.input_file_name, options.element_config, options.force_overwrite,
+                           options.write_clean_mesh_file_only, options.recalculate_input);
     return EXIT_SUCCESS;
 }
