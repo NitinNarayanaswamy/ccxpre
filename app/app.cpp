@@ -20,20 +20,8 @@
 #include <fstream>
 #include <getopt.h>
 
-#include <../ccxpre/utilities.hpp>
-#include <../ccxpre/write_ccx.hpp>
-#include <../ccxpre/input_env.hpp>
-
-#define PRINT(message) std::cout << message << std::endl
-#ifndef NDEBUG
-    #define PRINT_DEBUG(message) std::cout << "DEBUG    " << message << std::endl
-#else
-    #define PRINT_DEBUG(message) 
-#endif
-#define PRINT_INFO(message) std::cout << "INFO    " << message << std::endl
-#define PRINT_WARNING(message) std::cout << "WARNING    " << message << std::endl
-#define PRINT_ERROR(message) std::cout << "ERROR    " << message << std::endl
-#define PRINT_NEW_LINE std::cout << std::endl
+#include <ccxpre/ccxpre.hpp>
+#include <ccxpre/log.hpp>
 
 #define OPT_STR "hfmb:i:e:r:"
 #define USAGE_FMT "[-h] [-fm] [-b b_arg | -i i_arg [-e e_arg -r r_arg]]"
@@ -49,7 +37,7 @@ typedef struct {
 } options_t;
 
 int main(int argc, char *argv[]) {
-    if(argc == 1) {utilities::print_help(); return EXIT_SUCCESS;}
+    if(argc == 1) {ccxpre::utilities::print_help(); return EXIT_SUCCESS;}
 
     int opt;
     options_t options = {false, false, "", "All", "None"};
@@ -57,7 +45,7 @@ int main(int argc, char *argv[]) {
     while((opt = getopt(argc, argv, OPT_STR)) != EOF) {
         switch(opt) {
             case 'h':
-                utilities::print_help();
+                ccxpre::utilities::print_help();
                 return EXIT_SUCCESS;
             case 'f':
                 options.force_overwrite = true;
@@ -68,7 +56,7 @@ int main(int argc, char *argv[]) {
                 PRINT_INFO("Writing only clean mesh file");
                 break;
             case 'b':
-                write_ccx::input_file(optarg, WRITE_CCX_BOILERPLATE, options.force_overwrite);
+                ccxpre::write_ccx::input_file(optarg, WRITE_CCX_BOILERPLATE, options.force_overwrite);
                 return EXIT_SUCCESS;
             case 'i':
                 options.input_file_name = optarg;
@@ -80,13 +68,13 @@ int main(int argc, char *argv[]) {
                 options.recalculate_input = optarg;
                 break;
             case '?':
-                PRINT_INFO("See help using -h option");
+                PRINT_INFO("For help use -h option");
                 return EXIT_SUCCESS;
         }
     }
 
     if(options.element_config == "All") {PRINT_WARNING("By default all elements sets are written");}
-    input_env::check_n_run(options.input_file_name, options.element_config, options.force_overwrite,
+    ccxpre::input_env::check_n_run(options.input_file_name, options.element_config, options.force_overwrite,
                            options.write_clean_mesh_file_only, options.recalculate_input);
     return EXIT_SUCCESS;
 }

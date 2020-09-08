@@ -13,3 +13,10 @@ To create a CalculiX input file and, configure an existing Abaqus input file gen
 ## Install
 
 ## Future work
+
+## To do
+check that the files close during error
+
+re check for binary in file streams
+
+space before * or begins with
