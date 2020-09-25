@@ -10,6 +10,8 @@ namespace ccxpre::utilities {
 
     void str_to_upper(std::string &str);
 
+    bool is_str_equal(std::string str1, const std::string str2);
+
     std::vector<unsigned int> csv_str_to_numbers(const std::string str);
 
     std::string get_key_value_pair(const std::string str, const std::string keyword, const char key_value_delimiter, const char delimiter);

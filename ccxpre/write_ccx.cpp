@@ -66,6 +66,11 @@ namespace ccxpre::write_ccx {
         ccx_input_file << "*SOLID SECTION, ELSET = Eall, MATERIAL = Steel_mm\n";
         ccx_input_file << "**}\n";
         ccx_input_file << '\n';
+        ccx_input_file << "**surfaces {\n";
+        ccx_input_file << "*SURFACE, NAME = surface, TYPE = ELEMENT\n";
+        ccx_input_file << "elset_surface, S2\n";
+        ccx_input_file << "**}\n";
+        ccx_input_file << '\n';
         ccx_input_file << "**boundary conditions {\n";
         ccx_input_file << "*BOUNDARY\n";
         ccx_input_file << "fix, 1, 3\n";
@@ -77,6 +82,9 @@ namespace ccxpre::write_ccx {
         ccx_input_file << '\n';
         ccx_input_file << "*CLOAD\n";
         ccx_input_file << "load, 1, 1.0\n";
+        ccx_input_file << '\n';
+        ccx_input_file << "*DSLOAD\n";
+        ccx_input_file << "surface, P, 1.0\n";
         ccx_input_file << '\n';
         ccx_input_file << "*NODE FILE\n";
         ccx_input_file << "U\n";

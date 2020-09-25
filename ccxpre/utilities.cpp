@@ -63,8 +63,8 @@ namespace ccxpre::utilities {
         PRINT("          are currently supported. For multiple input use comma as a separator.");
         PRINT_NEW_LINE;
         PRINT("    -r    Recalculates element sets of edges. Requires edge node group name.");
-        PRINT("          For example -r RCES=EDGE1NODES, use comma to separate multiple groups ");
-        PRINT("          like, -r RCES=EDGE1NODES,EDGE2NODES.");
+        PRINT("          For example -r RCES=Edge1Nodes, use comma to separate multiple groups ");
+        PRINT("          like, -r RCES=Edge1Nodes,EDGE2NODES.");
     }
 
     bool is_file(const std::string file) {
@@ -76,6 +76,13 @@ namespace ccxpre::utilities {
 
     void str_to_upper(std::string &str) {
         std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+    }
+
+    bool is_str_equal(std::string str1, const std::string str2) {
+        str_to_upper(str1);
+        if(str1 == str2) {return true;}
+        else {return false;}
+        return false;
     }
 
     unsigned int get_first_number_in_csv_str(const std::string str) {

@@ -11,12 +11,10 @@ To create a CalculiX input file and, configure an existing Abaqus input file gen
 `ccxpre -i my_mesh.inp -e SUR=CAX4`
 
 ## Install
-
-## Future work
-
-## To do
-check that the files close during error
-
-re check for binary in file streams
-
-space before * or begins with
+Linux
+`git clone https://github.com/NitinNarayanaswamy/ccxpre`
+`cd ccxpre`
+`mkdir build bin`
+`cd build`
+`cmake ..`
+`make`

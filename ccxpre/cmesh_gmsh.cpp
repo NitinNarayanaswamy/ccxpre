@@ -18,7 +18,6 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-// #include <boost/algorithm/string.hpp>
 #include <vector>
 
 #include <ccxpre.hpp>
@@ -67,17 +66,15 @@ namespace ccxpre::cmesh_gmsh {
             if(skip_line_count == 0) {
                 if(current_line.at(0) == '*' && current_line.at(1) != '*') {
                     skip_line_flag = false;
-                    // ignore case compare
-                    ccxpre::utilities::str_to_upper(current_line);
-                    if(current_line.substr(0, 8) == HEADING_HEADER) {
+                    if(ccxpre::utilities::is_str_equal(current_line.substr(0, 8), HEADING_HEADER)) {
                         skip_line_count = 1;
                         continue;
                     }
-                    else if(current_line.substr(0, 5) == NODE_HEADER) {
+                    else if(ccxpre::utilities::is_str_equal(current_line.substr(0, 5), NODE_HEADER)) {
                         clean_mesh_file << "*NODE,NSET=Nall\n";
                         continue;
                     }
-                    else if(current_line.substr(0, 8) == ELEMENT_HEADER && element_config != "All") {
+                    else if(ccxpre::utilities::is_str_equal(current_line.substr(0, 8), ELEMENT_HEADER) && element_config != "All") {
                         std::string new_element_line = is_element_header_broken(current_line.substr(8), element_config);
                         if(new_element_line != "") {
                             PRINT_INFO("Writing elements under header " << current_line);
@@ -91,7 +88,7 @@ namespace ccxpre::cmesh_gmsh {
                             continue;
                         }
                     }
-                    else if(current_line.substr(0, 6) == ELEMENT_SET_HEADER && recalculate_input != "None") {
+                    else if(ccxpre::utilities::is_str_equal(current_line.substr(0, 6), ELEMENT_SET_HEADER) && recalculate_input != "None") {
                         if(!is_set_broken(current_line.substr(6), recalculate_input, false)) {
                             PRINT_INFO("Writing elements under header " << current_line << " without changes");
                             clean_mesh_file << current_line << '\n';
@@ -116,7 +113,6 @@ namespace ccxpre::cmesh_gmsh {
             mesh_file.clear();
             mesh_file.seekg(0);
             bool is_nodes = false;
-            // std::string new_set;
             std::vector<unsigned int> nodes;
             std::ofstream ccxpre_temp_file(CCXPRE_TEMP_DATA_FILE);
             ccxpre_temp_file << "**ccxpre recalculation {\n";
@@ -128,8 +124,7 @@ namespace ccxpre::cmesh_gmsh {
                         nodes.clear();
                     }
                     is_nodes = false;
-                    ccxpre::utilities::str_to_upper(current_line);
-                    if(current_line.substr(0, 5) == NODE_SET_HEADER) {
+                    if(ccxpre::utilities::is_str_equal(current_line.substr(0, 5), NODE_SET_HEADER)) {
                         if(is_set_broken(current_line.substr(5), recalculate_input, true)) {
                             PRINT_INFO("Recalculating and writing elements using node set " << current_line);
                             std::string new_set = ccxpre::utilities::get_key_value_pair(current_line, NODE_SET_KEY, CCXPRE_KEY_VALUE_DELIMITER, CCXPRE_DELIMITER);
@@ -162,12 +157,12 @@ namespace ccxpre::cmesh_gmsh {
     std::string is_element_header_broken(const std::string element_line, const std::string element_config) {
         std::string elset_in_line = ccxpre::utilities::get_key_value_pair(element_line, ELEMENT_SET_KEY, CCXPRE_KEY_VALUE_DELIMITER, CCXPRE_DELIMITER);
         if(elset_in_line == "") {PRINT_ERROR(ELEMENT_SET_KEY << " not found"); return "";}
-        if(elset_in_line.substr(0, 4) == "LINE") {
+        if(ccxpre::utilities::is_str_equal(elset_in_line.substr(0, 4), "LINE")) {
             std::string element_type = ccxpre::utilities::get_key_value_pair(element_config, CCXPRE_LINE_ELEMENT_SET, CCXPRE_KEY_VALUE_DELIMITER, CCXPRE_DELIMITER);
             if(element_type == "") {return "";}
             else {return NEW_ELEMENT_LINE(element_type, elset_in_line);}
         }
-        else if(elset_in_line.substr(0, 7) == "SURFACE") {
+        else if(ccxpre::utilities::is_str_equal(elset_in_line.substr(0, 7), "SURFACE")) {
             std::string element_type = ccxpre::utilities::get_key_value_pair(element_config, CCXPRE_SURFACE_ELEMENT_SET, CCXPRE_KEY_VALUE_DELIMITER, CCXPRE_DELIMITER);
             if(element_type == "") {return "";}
             else {return NEW_ELEMENT_LINE(element_type, elset_in_line);}
