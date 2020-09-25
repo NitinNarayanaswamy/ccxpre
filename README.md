@@ -13,8 +13,15 @@ To create a CalculiX input file and, configure an existing Abaqus input file gen
 ## Install
 Linux
 `git clone https://github.com/NitinNarayanaswamy/ccxpre`
+
 `cd ccxpre`
+
 `mkdir build bin`
+
 `cd build`
+
 `cmake ..`
+
 `make`
+
+`ln -s ~/ccxpre/bin/ccxpre0.1 ~/.local/bin/ccxpre`
